@@ -31,23 +31,26 @@ public class CallLuaFunction : MonoBehaviour
         DelegateFactory.Init();        
         lua.DoString(script);
 
+        int num = lua.Invoke<int, int>("test.luaFunc", 123456, true);
+        Debugger.Log("luastate call return: {0}", num);
+        lua.Call("test.luaPrint", "hhhh", true);
+
         //Get the function object
         luaFunc = lua.GetFunction("test.luaFunc");
 
         if (luaFunc != null)
         {
-            int num = luaFunc.Invoke<int, int>(123456);
+            num = luaFunc.Invoke<int, int>(123456);
             Debugger.Log("generic call return: {0}", num);
 
+            luaFunc = lua.GetFunction("test.luaFunc2");
             num = CallFunc();
             Debugger.Log("expansion call return: {0}", num);
 
+            luaFunc = lua.GetFunction("test.luaFunc");
             Func<int, int> Func = luaFunc.ToDelegate<Func<int, int>>();
             num = Func(123456);
             Debugger.Log("Delegate call return: {0}", num);
-            
-            num = lua.Invoke<int, int>("test.luaFunc", 123456, true);
-            Debugger.Log("luastate call return: {0}", num);
         }
 
         lua.CheckTop();

@@ -7,6 +7,11 @@ public class AccessingLuaVariables : MonoBehaviour
     private string script =
         @"
             print('Objs2Spawn is: '..Objs2Spawn)
+            if CreatedByCSharp ~= nil then
+                print('CreatedByCSharp has been created -> '..CreatedByCSharp)
+            else
+                print('CreatedByCSharp has been failed to create')
+            end
             var2read = 42
             varTable = {1,2,3,4,5}
             varTable.default = 1
@@ -17,7 +22,7 @@ public class AccessingLuaVariables : MonoBehaviour
             setmetatable(varTable, meta)
             
             function TestFunc(strs)
-                print('get func by variable')
+                print('get func by variable '..strs)
             end
         ";
 
@@ -32,6 +37,7 @@ public class AccessingLuaVariables : MonoBehaviour
         LuaState lua = new LuaState();
         lua.Start();
         lua["Objs2Spawn"] = 5;
+        //lua["CreatedByCSharp"] = "CSharp variable";
         lua.DoString(script);
 
         //通过LuaState访问
@@ -39,7 +45,7 @@ public class AccessingLuaVariables : MonoBehaviour
         Debugger.Log("Read table var from lua: {0}", lua["varTable.default"]);  //LuaState 拆串式table
 
         LuaFunction func = lua["TestFunc"] as LuaFunction;
-        func.Call();
+        func.Call("CSharp");
         func.Dispose();
 
         //cache成LuaTable进行访问
